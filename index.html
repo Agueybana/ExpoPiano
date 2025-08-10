@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Starlight Piano — Advanced</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- v0.2 clean: no 'Grant MIDI' button; MIDI via Input dropdown -->
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">🎹 Starlight Piano</div>
+    <div class="controls">
+      <label>Input:
+        <select id="midi-input"></select>
+      </label>
+      <!-- REMOVED: <button id="request-midi">Grant MIDI</button> -->
+      <button id="refresh-midi" title="Refresh MIDI devices">↻</button>
+      <div class="divider"></div>
+      <button id="record-btn" class="pill">● Record</button>
+      <button id="play-btn" class="pill">▶ Play</button>
+      <button id="loop-btn" class="pill" title="Loop playback">⟲ Loop Off</button>
+      <button id="stop-btn" class="pill">■ Stop</button>
+      <div class="divider"></div>
+      <label>BPM: <span id="bpm-readout">—</span></label>
+      <button id="metronome-btn" title="Toggle metronome">⏱</button>
+      <label class="inline">Metro Vol
+        <input id="metronome-vol" type="range" min="0" max="1" step="0.01" value="0.35" />
+      </label>
+      <div class="divider"></div>
+      <label>Transpose
+        <input id="transpose" type="range" min="-24" max="24" step="1" value="0" />
+      </label>
+      <label>Volume
+        <input id="master-volume" type="range" min="0" max="1" step="0.01" value="0.8" />
+      </label>
+      <button id="settings-btn">⚙ Settings</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="stage-container">
+      <!-- Visuals render ABOVE the keyboard in this dark area -->
+      <canvas id="stage"></canvas>
+      <canvas id="post"></canvas>
+      <div id="overlay"></div>
+    </div>
+    <div id="keyboard"></div>
+  </main>
+
+  <div id="settings-panel" class="panel hidden">
+    <h2>Settings</h2>
+    <section>
+      <h3>Visuals</h3>
+      <label><input type="checkbox" id="enable-bloom" checked /> Bloom</label>
+      <label><input type="checkbox" id="enable-trails" checked /> Note trails</label>
+      <label><input type="checkbox" id="enable-shadows" checked /> Key shadows</label>
+      <label><input type="checkbox" id="enable-explosions" /> 3D Explosions</label>
+      <label>Explosion Type:
+        <select id="explosion-type">
+          <option value="sphere">Sphere Burst</option>
+          <option value="fountain">Fountain</option>
+          <option value="shatter">Shatter</option>
+          <option value="quantum">Quantum</option>
+          <option value="nova">Nova</option>
+        </select>
+      </label>
+      <label>Particles: <input type="range" id="particle-budget" min="1000" max="40000" step="1000" value="16000" /></label>
+      <label>Theme:
+        <select id="theme-select"></select>
+      </label>
+    </section>
+
+    <section>
+      <h3>Audio</h3>
+      <label>Voice Mode:
+        <select id="voice-mode">
+          <option value="sine">Sine</option>
+          <option value="triangle">Triangle</option>
+          <option value="sawtooth">Saw</option>
+          <option value="square">Square</option>
+          <option value="fm">FM Bells</option>
+        </select>
+      </label>
+      <label>Polyphony: <input type="number" id="polyphony" min="8" max="128" value="32" /></label>
+
+      <div class="subgrid">
+        <label>Reverb Room
+          <select id="reverb-room">
+            <option value="studio">Studio</option>
+            <option value="hall">Concert Hall</option>
+            <option value="cathedral">Cathedral</option>
+            <option value="plate">Plate</option>
+          </select>
+        </label>
+        <label>Reverb Size
+          <input id="reverb-size" type="range" min="0.2" max="2.5" step="0.05" value="1.0" />
+        </label>
+        <label>Reverb Mix
+          <input id="reverb-mix" type="range" min="0" max="1" step="0.01" value="0.25" />
+        </label>
+      </div>
+
+      <div class="subgrid">
+        <label>Delay Time (ms)
+          <input id="delay-time" type="range" min="60" max="900" step="1" value="320" />
+        </label>
+        <label>Delay Feedback
+          <input id="delay-feedback" type="range" min="0" max="0.95" step="0.01" value="0.35" />
+        </label>
+        <label>Delay Mix
+          <input id="delay-mix" type="range" min="0" max="1" step="0.01" value="0.22" />
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h3>Input</h3>
+      <label><input type="checkbox" id="computer-keys" checked /> Enable Computer Keyboard</label>
+      <label>Key Labels: <select id="label-mode">
+        <option value="none">None</option>
+        <option value="notes">Notes</option>
+        <option value="pc">QWERTY</option>
+      </select></label>
+    </section>
+
+    <section>
+      <h3>Recording</h3>
+      <button id="export-json">Export JSON</button>
+      <input type="file" id="import-json" accept="application/json"/>
+      <button id="clear-recordings">Clear Saved</button>
+    </section>
+    <button id="close-settings" class="close">Close</button>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

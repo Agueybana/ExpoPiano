@@ -1,0 +1,114 @@
+/* Starlight Piano Styles (revised) */
+:root {
+  --bg: #0b0f15;
+  --panel: #121823;
+  --ink: #e8eefc;
+  --muted: #96a1b2;
+  --accent: #6fd3ff;
+  --danger: #ff5a7a;
+  --ok: #7aff9f;
+  --shadow: rgba(0,0,0,0.4);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji; }
+
+.topbar {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  background: linear-gradient(180deg, rgba(18,24,35,0.9), rgba(18,24,35,0.6));
+  box-shadow: 0 2px 8px var(--shadow);
+  position: sticky;
+  top: 0; z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.brand { font-weight: 700; letter-spacing: .4px; }
+.controls { display: flex; align-items: center; gap: 10px; }
+.controls label { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); margin-right: 6px; }
+.controls input[type="range"] { vertical-align: middle; }
+.pill { border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--ink); padding: 6px 10px; border-radius: 16px; cursor: pointer; }
+.pill:active { transform: translateY(1px); }
+.inline { display: inline-flex; align-items: center; gap: 6px; }
+
+.divider { width: 1px; height: 26px; background: rgba(255,255,255,0.1); margin: 0 2px; }
+
+main { display: grid; grid-template-rows: 1fr auto; height: calc(100% - 54px); }
+#stage-container { position: relative; overflow: hidden; }
+#stage, #post { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#post { pointer-events: none; }
+#overlay { position: absolute; inset: 0; pointer-events: none; }
+
+#keyboard {
+  position: relative;
+  height: 208px;
+  background: #0c111b;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  user-select: none;
+}
+#keyboard .white-keys, #keyboard .black-keys {
+  position: absolute; left: 0; right: 0;
+  height: 100%;
+  display: grid; gap: 0;
+}
+#keyboard .white-keys { grid-template-columns: repeat(52, 1fr); z-index: 1; }
+
+/* CRITICAL: only the actual black key shapes should receive pointer events */
+#keyboard .black-keys { z-index: 2; pointer-events: none; }
+#keyboard .black-keys .key { pointer-events: auto; }
+
+.key {
+  position: relative;
+  border-left: 1px solid rgba(255,255,255,0.04);
+  border-right: 1px solid rgba(0,0,0,0.4);
+  background: linear-gradient(180deg, #f5f8ff, #d6dceb);
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.25);
+  transition: transform 0.02s ease, filter 0.02s ease;
+  height: 100%;
+}
+.key.black {
+  background: linear-gradient(180deg, #171b24, #0e1219);
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.6);
+  height: 60%;
+  width: 60%;
+  justify-self: center;
+  border-left: none; border-right: none;
+  border-radius: 0 0 4px 4px;
+}
+.key.pressed { transform: translateY(2px); filter: brightness(0.92); }
+.key .label {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; color: var(--muted);
+}
+.key.black .label { color: #c9d0e2; font-size: 10px; bottom: -16px; }
+.key .trail {
+  position: absolute; inset: 0; pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.panel {
+  position: fixed; right: 12px; top: 70px; width: 360px; max-height: calc(100% - 90px);
+  background: var(--panel); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  padding: 14px; overflow: auto; z-index: 20;
+}
+.panel.hidden { display: none; }
+.panel h2 { margin: 0 0 8px; }
+.panel section { padding: 14px 0; border-top: 1px solid rgba(255,255,255,0.08); }
+
+/* Add comfortable spacing in Visuals section */
+.panel section label { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
+
+.panel .close { width: 100%; padding: 10px; background: #1a2231; border: 1px solid rgba(255,255,255,0.12); color: var(--ink); border-radius: 8px; cursor: pointer; }
+
+.subgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Piano overlay gradient */
+#overlay:after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 120px;
+  background: linear-gradient(180deg, rgba(11,15,21,0), rgba(11,15,21,1) 60%);
+  pointer-events: none;
+}
