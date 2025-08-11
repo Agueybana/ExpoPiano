@@ -33,7 +33,7 @@
   ],
   "failed_roots": [],
   "output_format": "mp3",
-  "samples_dir": "/Users/gabrielsuarez/ExpoPiano/samples",
+  "samples_dir": "/Users/gabrielsuarez/ExpoPiano/samples-modern",
   "impulses_dir": "/Users/gabrielsuarez/ExpoPiano/impulses",
   "impulses_fixed": {
     "studio.wav": "/Users/gabrielsuarez/ExpoPiano/impulses/studio.wav",

@@ -45,6 +45,7 @@
       <canvas id="stage"></canvas>
       <canvas id="post"></canvas>
       <div id="overlay"></div>
+      <div class="gradient-overlay"></div>
     </div>
     <div id="keyboard"></div>
   </main>
@@ -74,6 +75,13 @@
 
     <section>
       <h3>Audio</h3>
+      <label>Piano Sound:
+        <select id="piano-sound">
+          <option value="modern">Modern Piano</option>
+          <option value="classic">Classic Piano (Vintage)</option>
+          <option value="upright">Upright Piano</option>
+        </select>
+      </label>
       <label>Voice Mode:
         <select id="voice-mode">
           <option value="sine">Sine</option>
