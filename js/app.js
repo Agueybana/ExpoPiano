@@ -63,6 +63,7 @@ const labelMode = $('label-mode');
 const exportBtn = $('export-json');
 const importInput = $('import-json');
 const clearRecs = $('clear-recordings');
+const pianoSound = $('piano-sound');
 
 // Kill legacy button if present
 if (rogueGrantBtn && rogueGrantBtn.parentNode) rogueGrantBtn.parentNode.removeChild(rogueGrantBtn);
@@ -153,8 +154,8 @@ function handleNoteOn(rawNote, velocity){
   }
   tempo.onset(performance.now(), velocity);
   const bpm = tempo.bpm;
-  if(metronomeOn) synth.setMetronomeBPM(bpm || metronomeSlider?.valueAsNumber || 120);
-  updateBPMReadout(bpm || metronomeSlider?.valueAsNumber || 120);
+  // Update BPM readout but don't change metronome speed
+  if(bpm) updateBPMReadout(bpm);
   timeline.emit('noteon', {note, velocity});
 }
 function handleNoteOff(rawNote){
@@ -226,6 +227,12 @@ on(transposeSlider, 'input', ()=>{
   saveTranspose(transpose);
   updateLaneAlignment();
 });
+on(pianoSound, 'change', ()=>synth.setPianoSound(pianoSound.value));
+
+// Set piano sound selector to upright to match audio.js default
+if(pianoSound) {
+  pianoSound.value = 'upright';
+}
 
 // Initial FX
 if(reverbRoom && reverbSize && reverbMix) synth.setReverb(reverbRoom.value, parseFloat(reverbSize.value||'1'), parseFloat(reverbMix.value||'0.25'));
@@ -287,10 +294,63 @@ on(recordBtn, 'click', ()=>{
 });
 on(playBtn, 'click', ()=>{
   if(!timeline.events.length) timeline.loadSaved();
+  
+  // Calculate fall time based on gravity (matching renderer physics)
+  const fallTime = 1.2; // seconds for notes to fall from top to bottom
+  
+  // Pre-schedule visual notes for playback
+  const schedulePlaybackNotes = () => {
+    const events = timeline.events;
+    const startTime = performance.now();
+    
+    // Schedule all visual notes ahead of time
+    for(const event of events) {
+      if(event.type === 'noteon') {
+        // Schedule visual note to start falling before it should sound
+        setTimeout(() => {
+          const note = transposed(event.note);
+          if(note == null) return;
+          
+          // Only show visual, don't play sound yet
+          const key = piano.keys.get(note);
+          if(key){
+            renderer.noteOnPlayback(note, event.vel, fallTime * 1000);
+            piano.press(note);
+            piano.trailBegin(note, renderer.colorFor(note, event.vel));
+          }
+        }, Math.max(0, event.t - fallTime * 1000));
+      } else if(event.type === 'noteoff') {
+        // Schedule note off at the original time
+        setTimeout(() => {
+          const note = transposed(event.note);
+          if(note == null) return;
+          renderer.noteOff(note);
+          piano.release(note);
+          piano.trailEnd(note);
+        }, event.t);
+      }
+    }
+  };
+  
+  // Schedule visual notes
+  schedulePlaybackNotes();
+  
+  // Handle audio playback at the correct times
   timeline.onEvent((type, payload)=>{
-    if(type==='noteon') handleNoteOn(payload.note, payload.velocity);
-    else if(type==='noteoff') handleNoteOff(payload.note);
+    if(type==='noteon') {
+      const note = transposed(payload.note);
+      if(note != null) {
+        synth.noteOn(note, payload.velocity);
+      }
+    }
+    else if(type==='noteoff') {
+      const note = transposed(payload.note);
+      if(note != null) {
+        synth.noteOff(note);
+      }
+    }
   });
+  
   timeline.play();
 });
 on(loopBtn, 'click', ()=>{
@@ -327,9 +387,11 @@ setTimeout(updateLaneAlignment, 450);
 
 // Per-key trail loop
 function tickTrails(){
-  for(const [m, k] of piano.keys){
-    if(k.trailState){
-      piano.trailUpdate(m, synth.sustainPedal);
+  if(piano.keys){
+    for(const [m, k] of piano.keys){
+      if(k.trailState){
+        piano.trailUpdate(m, synth.sustainPedal);
+      }
     }
   }
   requestAnimationFrame(tickTrails);
@@ -344,14 +406,14 @@ tickTrails();
     const visuals = panel?.querySelector('section');
     if(visuals){
       const label = document.createElement('label');
-      label.innerHTML = '<input type="checkbox" id="enable-key-glow" checked /> Key glow on keys';
+      label.innerHTML = '<input type="checkbox" id="enable-key-glow" /> Glow on keys';
       visuals.appendChild(label);
       toggle = label.querySelector('input');
     }
   }
   if(toggle){
-    toggle.checked = true;
-    piano.setKeyGlow(true);
+    toggle.checked = false;
+    piano.setKeyGlow(false);
     toggle.addEventListener('change', ()=>piano.setKeyGlow(toggle.checked));
   }
 })();

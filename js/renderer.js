@@ -138,6 +138,39 @@ export class Renderer {
         if (!this.enableExplosions) this._burstAt(x, 6, midi, velocity);
     }
 
+    noteOnPlayback(midi, velocity, fallTimeMs){
+        const lane = this.lanes.get(midi);
+        if (!lane) return;
+
+        const x = lane.x;
+        const w = lane.w;
+        const color = this.colorFor(midi, velocity);
+
+        const baseH = 22 + velocity*36;
+        
+        // Calculate initial position and velocity to reach the floor in fallTimeMs
+        const floorY = this._floorY();
+        const fallTimeSec = fallTimeMs / 1000;
+        const targetY = floorY - baseH;
+        
+        // Physics calculation: y = y0 + v0*t + 0.5*g*t^2
+        // We want the note to start at the top and reach targetY in fallTimeSec
+        const startY = -baseH - 50; // Start above the visible area
+        const distance = targetY - startY;
+        
+        // Calculate initial velocity needed to travel the distance in the given time
+        // distance = v0*t + 0.5*g*t^2, solve for v0
+        const initialVelocity = (distance - 0.5 * this.gravity * fallTimeSec * fallTimeSec) / fallTimeSec;
+        
+        const obj = {
+            midi, x, w: Math.max(4, w), y: startY, vy: initialVelocity, h: baseH,
+            color, on: performance.now(), off: null, landed: false, alpha: 1,
+            duration: 0, maxH: baseH, velocity, isPlayback: true,
+            targetTime: performance.now() + fallTimeMs
+        };
+        this.falling.push(obj);
+    }
+
     noteOff(midi){
         for(let i=this.falling.length-1; i>=0; i--){
             const n = this.falling[i];

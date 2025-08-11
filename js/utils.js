@@ -70,13 +70,61 @@ export class TempoEstimator {
   }
 }
 
-// Keyboard mapping for computer input (QWERTY -> spans 2+ octaves)
+// Keyboard mapping for computer input - intuitive piano layout
 export const KEYBOARD_MAP = {
-  'z': 48, 'x': 50, 'c': 52, 'v': 53, 'b': 55, 'n': 57, 'm': 59,
-  ',': 60, '.': 62, '/': 64,
-  'a': 61, 's': 63, 'd': 65, 'f': 66, 'g': 68, 'h': 70, 'j': 72, 'k': 74, 'l': 76, ';':77, "'":79,
-  'q': 72, 'w': 74, 'e': 76, 'r': 77, 't': 79, 'y': 81, 'u': 83, 'i': 84, 'o': 86, 'p': 88,
-  '1': 49, '2': 51, '3': 53, '4': 54, '5': 56, '6': 58, '7': 60, '8': 62, '9': 64, '0': 65, '-':67, '=':69
+  // Main row white keys (C4-E5): A S D F G H J K L ; '
+  'a': 60, // C4
+  's': 62, // D4
+  'd': 64, // E4
+  'f': 65, // F4
+  'g': 67, // G4
+  'h': 69, // A4
+  'j': 71, // B4
+  'k': 72, // C5
+  'l': 74, // D5
+  ';': 76, // E5
+  "'": 77, // F5
+  
+  // Top row black keys: W E T Y U O P [ ]
+  'w': 61, // C#4
+  'e': 63, // D#4
+  't': 66, // F#4
+  'y': 68, // G#4
+  'u': 70, // A#4
+  'o': 73, // C#5
+  'p': 75, // D#5
+  '[': 78, // F#5
+  ']': 80, // G#5
+  
+  // Bottom row white keys (C3-B3): Z X C V B N M
+  'z': 48, // C3
+  'x': 50, // D3
+  'c': 52, // E3
+  'v': 53, // F3
+  'b': 55, // G3
+  'n': 57, // A3
+  'm': 59, // B3
+  
+  // Number row for higher octave (C5-B5): 1 2 3 4 5 6 7 8 9 0
+  '1': 72, // C5 (duplicate of K for convenience)
+  '2': 74, // D5
+  '3': 76, // E5
+  '4': 77, // F5
+  '5': 79, // G5
+  '6': 81, // A5
+  '7': 83, // B5
+  '8': 84, // C6
+  '9': 86, // D6
+  '0': 88, // E6
+  
+  // Additional keys for lower octave (C2-B2)
+  'q': 36, // C2
+  'r': 38, // D2
+  'i': 40, // E2
+  ',': 41, // F2
+  '.': 43, // G2
+  '/': 45, // A2
+  '\\': 47, // B2
 };
 
 // Global transpose state (persisted)
